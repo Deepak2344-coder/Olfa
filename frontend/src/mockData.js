@@ -3,6 +3,7 @@
 import dangerous from "@contracts/analyze.dangerous.json";
 import suspicious from "@contracts/analyze.suspicious.json";
 import safe from "@contracts/analyze.safe.json";
+import reports from "@contracts/reports.example.json";
 
 /**
  * Keyword -> fixture table, consulted in order; the first entry is also the
@@ -23,3 +24,6 @@ export const CONTRACTS = [
     data: safe,
   },
 ];
+
+/** Fixture for the community page (GET /reports). */
+export const REPORTS_FIXTURE = reports;

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { clampScore, scoreBand, verdictBand, gaugeAngle, shortAge, severityClasses, certStatusKind } from "../src/lib/score.js";
+import { clampScore, scoreBand, verdictBand, gaugeAngle, shortAge, severityClasses, certStatusKind, statusClasses } from "../src/lib/score.js";
 
 test("clampScore clamps and rounds", () => {
   assert.equal(clampScore(-5), 0);
@@ -48,6 +48,15 @@ test("certStatusKind buckets statuses for the 3D chain", () => {
   assert.equal(certStatusKind("weak"), "bad");
   assert.equal(certStatusKind("distrusted"), "bad");
   assert.equal(certStatusKind("self-signed"), "bad");
+});
+
+test("statusClasses maps community report statuses", () => {
+  for (const s of ["confirmed", "pending", "disputed", "rejected", "weird", undefined]) {
+    assert.equal(typeof statusClasses(s), "string");
+  }
+  assert.match(statusClasses("confirmed"), /emerald/);
+  assert.match(statusClasses("pending"), /amber/);
+  assert.match(statusClasses("disputed"), /rose/);
 });
 
 test("shortAge renders relative labels", () => {

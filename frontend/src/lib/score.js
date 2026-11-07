@@ -111,6 +111,26 @@ export function verdictClasses(verdict, score) {
 }
 
 /**
+ * Badge color classes for a community report status.
+ * @param {string} status confirmed | pending | disputed | rejected | ...
+ * @returns {string} tailwind classes
+ */
+export function statusClasses(status) {
+  switch (status) {
+    case "confirmed":
+      return "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30";
+    case "pending":
+      return "bg-amber-500/15 text-amber-300 ring-amber-500/30";
+    case "disputed":
+      return "bg-rose-500/15 text-rose-300 ring-rose-500/30";
+    case "rejected":
+      return "bg-slate-500/15 text-slate-400 ring-slate-500/30";
+    default:
+      return "bg-slate-500/15 text-slate-300 ring-slate-500/30";
+  }
+}
+
+/**
  * Very short relative time for history entries ("2m ago").
  * @param {string} isoTimestamp ISO date string (may be older)
  * @param {Date} [now]

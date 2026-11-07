@@ -4,7 +4,8 @@
 // examples and a 1.5s delay; otherwise it talks to the FastAPI backend at
 // VITE_API_URL (falls back to the shared VITE_API_BASE_URL).
 import { mockAnalyze, mockReport } from "./lib/mock.js";
-import { CONTRACTS } from "./mockData.js";
+import { CONTRACTS, REPORTS_FIXTURE } from "./mockData.js";
+import { getReporterId } from "./lib/history.js";
 
 const API_BASE =
   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
@@ -66,6 +67,62 @@ export async function sendReport(payload) {
   }
   if (!response.ok) {
     throw new Error(`The report was rejected (HTTP ${response.status}).`);
+  }
+  return response.json();
+}
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * GET {API}/reports — community feed of submitted reports.
+ * @returns {Promise<object>} {generated_at, total, reports: [...]}
+ */
+export async function fetchReports() {
+  if (USE_MOCK) {
+    await delay(350);
+    return { ...REPORTS_FIXTURE, reports: REPORTS_FIXTURE.reports.map((r) => ({ ...r })) };
+  }
+  let response;
+  try {
+    response = await fetch(`${API_BASE}/reports`);
+  } catch {
+    throw new Error(`Cannot reach the API at ${API_BASE}. Is the backend running?`);
+  }
+  if (!response.ok) {
+    throw new Error(`The API rejected the request (HTTP ${response.status}).`);
+  }
+  const data = await response.json();
+  if (!data || !Array.isArray(data.reports)) {
+    throw new Error("The API returned an unexpected response for /reports.");
+  }
+  return data;
+}
+
+/**
+ * POST {API}/report/confirm — add my confirmation to an existing report.
+ * Carries only {report_id, reporter_id}. The backend implements the
+ * confirmation endpoint; mock mode just returns a canned success.
+ * @param {string} reportId
+ * @returns {Promise<object>}
+ */
+export async function confirmReport(reportId) {
+  const reporterId = await getReporterId();
+  if (USE_MOCK) {
+    await delay(300);
+    return { report_id: reportId, reporter_id: reporterId, status: "confirmed", ok: true };
+  }
+  let response;
+  try {
+    response = await fetch(`${API_BASE}/report/confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ report_id: reportId, reporter_id: reporterId }),
+    });
+  } catch {
+    throw new Error(`Cannot reach the API at ${API_BASE}.`);
+  }
+  if (!response.ok) {
+    throw new Error(`The confirmation was rejected (HTTP ${response.status}).`);
   }
   return response.json();
 }

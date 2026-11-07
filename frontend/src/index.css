@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+/* <details> summaries without the default triangle */
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
