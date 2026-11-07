@@ -1,0 +1,17 @@
+# Backend API dependencies (run from the repository root).
+fastapi>=0.110
+uvicorn>=0.27
+pydantic>=2
+
+# Local URL ML inference (versions compatible with the supplied joblib artifacts)
+numpy>=1.26,<3
+pandas>=2.1,<4
+joblib>=1.3
+scikit-learn==1.6.1
+# <3 is required: the bundled url_xgb.joblib is a legacy-format model that
+# xgboost 3.x refuses to load ("input stream corrupted").
+xgboost>=2.1,<3
+
+# Tests
+pytest>=8
+httpx>=0.27

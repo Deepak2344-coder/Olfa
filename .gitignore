@@ -80,3 +80,14 @@ weights/
 Thumbs.db
 *.swp
 *.log
+
+# --- Workspace artifacts that must not be committed ---
+# Playwright browser downloads (engines/cache is ~278 MB)
+engines/cache/
+# Generated codebase dumps used as AI context
+CodeBase.txt
+Code_Base.txt
+# The delivered ML overlay bundle; it is already applied to backend/ and engines/
+HackMatrix_ML_Integration/
+# Training datasets; download PhiUSIIL separately
+extras/*.csv
