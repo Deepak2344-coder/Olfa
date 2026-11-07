@@ -113,6 +113,35 @@ class PageEngine(Engine):
         """Offline-friendly entry point: analyse saved HTML via Playwright set_content."""
         return await self._analyse_source(html, via_html=True, url_hint=url)
 
+    async def fetch_text(self, url: str) -> str:
+        """Fetch visible page text via a sandboxed headless browser (no credentials/cookies).
+
+        Never raises: returns an empty string when the fetch fails, so callers
+        (e.g. the LLM engine) can degrade gracefully.
+        """
+        try:
+            os.environ["PLAYWRIGHT_BROWSERS_PATH"] = str(SCREENSHOT_DIR)
+            async with async_playwright() as playwright:
+                browser = await playwright.chromium.launch(headless=True)
+                try:
+                    context = await browser.new_context()
+                    await context.route("**/*", _download_guard)
+                    page = await context.new_page()
+                    await page.goto(url, wait_until="domcontentloaded", timeout=PAGE_TIMEOUT_MS)
+                    try:
+                        await page.wait_for_load_state("load", timeout=max(1, PAGE_TIMEOUT_MS // 5))
+                    except Exception:
+                        pass
+                    text = await page.evaluate(
+                        "(maxLen) => (document.body ? (document.body.innerText || document.body.textContent || \"\") : \"\").slice(0, maxLen)",
+                        _MAX_TEXT_CHARS,
+                    )
+                    return text or ""
+                finally:
+                    await browser.close()
+        except Exception:
+            return ""
+
     async def _analyse_source(self, source: str, via_html: bool, url_hint: str) -> EngineResult:
         reasons: list[Reason] = []
         error: str | None = None
