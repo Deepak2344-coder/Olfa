@@ -1,0 +1,9 @@
+{
+  "distrusted_intermediates": [],
+  "example": {
+    "label": "EXAMPLE_ONLY",
+    "description": "Clearly labelled example entry. Replace with real issuer public key hashes (sha256:<hex>) as threat intel is added. The empty list above means no issuer is currently flagged.",
+    "issuer_public_key_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "status": "distrusted"
+  }
+}
