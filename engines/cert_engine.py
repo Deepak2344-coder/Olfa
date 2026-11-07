@@ -35,11 +35,13 @@ from typing import Any
 from urllib.parse import urlsplit
 
 from shared.base import Engine, EngineResult, Reason
+from engines import weak_key
 
 PORT = 443
 FETCH_TIMEOUT = 5.0
 CT_TIMEOUT = 4.0
 CT_CACHE_TTL_SECONDS = 3600
+MAX_SMALL_KEY = weak_key.DEFAULT_MAX_SMALL_K
 CRT_SH_URL = "https://crt.sh/json/v1/?q={domain}&output=json"
 
 SEVERITY_WEIGHTS = {"info": 0.05, "low": 0.25, "medium": 0.5, "high": 0.8}
@@ -165,17 +167,24 @@ def _key_info(spki_content: bytes) -> dict[str, Any]:
     key_bytes = bit_der[1:]  # BIT STRING content starts with the unused-bits octet
     key_type = "rsa" if key_alg == RSA_OID else ("ec" if key_alg == EC_OID else "other")
     key_size: int | None = None
+    ec_point: tuple[int, int] | None = None
     if key_type == "rsa":
         _, rsa_content, _ = _read_tlv(key_bytes, 0)  # RSAPublicKey
         _, modulus, _ = _read_tlv(rsa_content, 0)
         key_size = int.from_bytes(modulus, "big").bit_length()
     elif key_type == "ec":
         key_size = EC_KEY_SIZES.get(curve_oid or "", None)
+        if len(key_bytes) >= 65 and key_bytes[0] == 0x04:  # uncompressed EC point: 0x04 || X || Y
+            ec_point = (
+                int.from_bytes(key_bytes[1:33], "big"),
+                int.from_bytes(key_bytes[33:65], "big"),
+            )
     return {
         "key_type": key_type,
         "key_size": key_size,
         "ec_curve": curve_oid if key_type == "ec" else None,
         "pubkey_hash": "sha256:" + hashlib.sha256(key_bytes).hexdigest(),
+        "ec_point": ec_point,
     }
 
 
@@ -253,6 +262,7 @@ def _parse_certificate(der: bytes) -> dict[str, Any]:
         "key_size": key_info["key_size"],
         "ec_curve": key_info["ec_curve"],
         "pubkey_hash": key_info["pubkey_hash"],
+        "ec_point": key_info["ec_point"],
     }
 
 
@@ -456,18 +466,32 @@ class CertificateChainEngine(Engine):
         total = len(certs)
         chain_entries: list[dict[str, str]] = []
         for idx, cert in enumerate(certs):
+            weak_status, weak_reason = _weak_check(cert)
             if idx == 0:
                 role = "leaf"
-                status = leaf_status
+                status = weak_status if weak_status != "ok" else leaf_status
+                if weak_reason is not None:
+                    reasons.append(weak_reason)
+                    confidence = min(confidence, 0.65)
             elif idx == total - 1:
                 role = "root"
                 status, reason_text = _ca_status(cert, distrusted_hashes)
+                if weak_status != "ok":
+                    status = weak_status
+                    if reason_text is None:
+                        reasons.append(weak_reason)
+                        confidence = min(confidence, 0.65)
                 if reason_text is not None:
                     reasons.append(Reason("high", reason_text))
                     confidence = 0.7
             else:
                 role = "intermediate"
                 status, reason_text = _ca_status(cert, distrusted_hashes)
+                if weak_status != "ok":
+                    status = weak_status
+                    if reason_text is None:
+                        reasons.append(weak_reason)
+                        confidence = min(confidence, 0.65)
                 if reason_text is not None:
                     reasons.append(Reason("high", reason_text))
                     confidence = 0.7
@@ -496,4 +520,18 @@ def _ca_status(cert: dict[str, Any], distrusted_hashes: set[str]) -> tuple[str, 
         return "distrusted", f"TLS issuer {cert['subject']} is listed as distrusted."
     if _is_weak_key(cert["key_type"], cert["key_size"], cert["ec_curve"]):
         return "weak", f"TLS issuer {cert['subject']} uses a weak key."
+    return "ok", None
+
+
+def _weak_check(cert: dict[str, Any]) -> tuple[str, Reason | None]:
+    """Return ("weak", reason) when the certificate EC public key is trivially weak."""
+    if cert.get("key_type") != "ec":
+        return "ok", None
+    if cert.get("ec_point") is None:
+        return "ok", None
+    if weak_key.is_weak_ec_public_key(cert["ec_point"], cert.get("ec_curve"), max_small_k=MAX_SMALL_KEY):
+        return (
+            "weak",
+            Reason("high", f"EC private key is trivially weak (public key equals k*G with k <= {MAX_SMALL_KEY})."),
+        )
     return "ok", None
