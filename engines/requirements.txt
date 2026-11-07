@@ -1,0 +1,7 @@
+# Engine dependencies (run from the repository root).
+cryptography>=42
+playwright>=1.40
+imagehash>=4.0
+
+# Tests
+pytest>=8
