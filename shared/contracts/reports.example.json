@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-11-07T15:45:00Z",
+  "total": 3,
+  "reports": [
+    {
+      "id": "rep_01HXT9K2",
+      "url": "https://hsbc-internet-banking.secure-idverify.top/auth/signin",
+      "category": "phishing",
+      "note": "Fake HSBC login page, asks for online banking credentials and one-time code.",
+      "reporter_id": "user_8f31c2a9",
+      "reporter_reputation": 0.86,
+      "created_at": "2026-11-07T14:12:44Z",
+      "confirmations": 14,
+      "denials": 0,
+      "confirming_reputation": 7.4,
+      "disputing_reputation": 0.0,
+      "status": "confirmed",
+      "status_detail": "reputation-weighted score 7.4 (>= 2.0) with no disputes",
+      "category_counts": {"phishing": 11, "scam": 2, "impersonation": 1}
+    },
+    {
+      "id": "rep_01HXT8QF",
+      "url": "http://free-crypto-giveaway-winners.example-bonus.click/",
+      "category": "scam",
+      "note": "Promises free crypto if you connect your wallet.",
+      "reporter_id": "user_2b77de10",
+      "reporter_reputation": 0.51,
+      "created_at": "2026-11-07T11:03:09Z",
+      "confirmations": 2,
+      "denials": 1,
+      "confirming_reputation": 0.9,
+      "disputing_reputation": 0.4,
+      "status": "pending",
+      "status_detail": "reputation-weighted score 0.5 (< 2.0), needs more signal",
+      "category_counts": {"scam": 2}
+    },
+    {
+      "id": "rep_01HXT7BB",
+      "url": "https://www.wikipedia.org/wiki/Phishing",
+      "category": "legitimate",
+      "note": "Reported by mistake: this is the Wikipedia article explaining phishing.",
+      "reporter_id": "user_51ac0034",
+      "reporter_reputation": 0.12,
+      "created_at": "2026-11-06T22:47:51Z",
+      "confirmations": 0,
+      "denials": 6,
+      "confirming_reputation": 0.0,
+      "disputing_reputation": 5.7,
+      "status": "disputed",
+      "status_detail": "reputation-weighted score -5.7 (<= -2.0), reporter reputation lowered",
+      "category_counts": {"legitimate": 1}
+    }
+  ]
+}

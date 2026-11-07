@@ -1,0 +1,6 @@
+{
+  "url": "https://hsbc-internet-banking.secure-idverify.top/auth/signin",
+  "category": "phishing",
+  "note": "Fake HSBC login page, asks for online banking credentials and one-time code.",
+  "reporter_id": "user_8f31c2a9"
+}

@@ -1,0 +1,85 @@
+{
+  "url": "https://www.wikipedia.org/wiki/Phishing",
+  "score": 93,
+  "verdict": "safe",
+  "scanned_at": "2026-11-07T15:41:47Z",
+  "engines": [
+    {
+      "name": "certificate_chain",
+      "risk": 0.02,
+      "confidence": 0.99,
+      "reasons": [
+        {"severity": "info", "text": "Certificate is valid, trusted and not near expiry (41 days left)."}
+      ],
+      "error": null
+    },
+    {
+      "name": "domain_lookalike",
+      "risk": 0.01,
+      "confidence": 0.95,
+      "reasons": [
+        {"severity": "info", "text": "Registered 2001-01-13 (age: 25 years); hostname matches the registrant brand."}
+      ],
+      "error": null
+    },
+    {
+      "name": "reputation",
+      "risk": 0.03,
+      "confidence": 0.92,
+      "reasons": [
+        {"severity": "info", "text": "No matches on any consulted blocklist."},
+        {"severity": "info", "text": "Positive reputation: frequently cited by news and government sites."}
+      ],
+      "error": null
+    },
+    {
+      "name": "content_heuristics",
+      "risk": 0.05,
+      "confidence": 0.8,
+      "reasons": [
+        {"severity": "info", "text": "No credential form on the page."},
+        {"severity": "info", "text": "No urgency or scare tactics detected in the page text."}
+      ],
+      "error": null
+    },
+    {
+      "name": "transport",
+      "risk": 0.02,
+      "confidence": 0.97,
+      "reasons": [
+        {"severity": "info", "text": "HTTPS enforced, HSTS present with a long max-age, no insecure subresources."}
+      ],
+      "error": null
+    },
+    {
+      "name": "dns_history",
+      "risk": 0.04,
+      "confidence": 0.7,
+      "reasons": [
+        {"severity": "info", "text": "DNSSEC signed; stable A/AAAA records for over 10 years."}
+      ],
+      "error": null
+    },
+    {
+      "name": "redirect_chain",
+      "risk": 0.06,
+      "confidence": 0.6,
+      "reasons": [
+        {"severity": "info", "text": "Single same-origin redirect (http -> https) before the final page."}
+      ],
+      "error": "Passive DNS provider rate-limited this request; chain taken from the browser fetch only."
+    }
+  ],
+  "reasons": [
+    {"engine": "reputation", "severity": "info", "text": "Positive reputation: frequently cited by news and government sites."},
+    {"engine": "certificate_chain", "severity": "info", "text": "Certificate is valid, trusted and not near expiry (41 days left)."},
+    {"engine": "domain_lookalike", "severity": "info", "text": "Registered 2001-01-13 (age: 25 years); hostname matches the registrant brand."},
+    {"engine": "transport", "severity": "info", "text": "HTTPS enforced, HSTS present with a long max-age, no insecure subresources."},
+    {"engine": "dns_history", "severity": "info", "text": "DNSSEC signed; stable A/AAAA records for over 10 years."}
+  ],
+  "certificate_chain": [
+    {"subject": "CN=DigiCert Global Root G2, O=DigiCert Inc, OU=www.digicert.com", "issuer": "CN=DigiCert Global Root G2, O=DigiCert Inc, OU=www.digicert.com", "role": "root", "status": "ok"},
+    {"subject": "CN=DigiCert TLS Hybrid ECC SHA384 2020 CA1, O=DigiCert Inc", "issuer": "CN=DigiCert Global Root G2, O=DigiCert Inc", "role": "intermediate", "status": "ok"},
+    {"subject": "CN=*.wikipedia.org", "issuer": "CN=DigiCert TLS Hybrid ECC SHA384 2020 CA1, O=DigiCert Inc", "role": "leaf", "status": "ok"}
+  ]
+}

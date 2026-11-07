@@ -1,0 +1,86 @@
+{
+  "url": "http://free-crypto-giveaway-winners.example-bonus.click/",
+  "score": 54,
+  "verdict": "suspicious",
+  "scanned_at": "2026-11-07T15:41:03Z",
+  "engines": [
+    {
+      "name": "certificate_chain",
+      "risk": 0.85,
+      "confidence": 0.95,
+      "reasons": [
+        {"severity": "high", "text": "Site is served over plain http, so there is no certificate at all."}
+      ],
+      "error": null
+    },
+    {
+      "name": "domain_lookalike",
+      "risk": 0.6,
+      "confidence": 0.8,
+      "reasons": [
+        {"severity": "medium", "text": "Domain 'example-bonus.click' is 4 months old and uses a cheap TLD."},
+        {"severity": "info", "text": "Keyword-stuffed label 'free-crypto-giveaway-winners'."}
+      ],
+      "error": null
+    },
+    {
+      "name": "reputation",
+      "risk": 0.45,
+      "confidence": 0.6,
+      "reasons": [
+        {"severity": "medium", "text": "Not on major blocklists, but 3 users marked it as spam this week."},
+        {"severity": "info", "text": "No positive reputation signals found either (domain too new)."}
+      ],
+      "error": null
+    },
+    {
+      "name": "content_heuristics",
+      "risk": 0.68,
+      "confidence": 0.72,
+      "reasons": [
+        {"severity": "medium", "text": "Page promises free cryptocurrency in exchange for a wallet connect."},
+        {"severity": "medium", "text": "Contact form asks for a phone number before showing any content."},
+        {"severity": "info", "text": "Large parts of the text look auto-generated."}
+      ],
+      "error": null
+    },
+    {
+      "name": "transport",
+      "risk": 0.7,
+      "confidence": 0.9,
+      "reasons": [
+        {"severity": "high", "text": "No HTTPS support: the server does not answer on port 443 with a certificate."}
+      ],
+      "error": null
+    },
+    {
+      "name": "dns_history",
+      "risk": 0.3,
+      "confidence": 0.5,
+      "reasons": [
+        {"severity": "info", "text": "A record resolves to a shared CDN; no MX record configured."}
+      ],
+      "error": null
+    },
+    {
+      "name": "redirect_chain",
+      "risk": 0.2,
+      "confidence": 0.4,
+      "reasons": [
+        {"severity": "info", "text": "No redirects: the requested URL is the final URL."}
+      ],
+      "error": "robots.txt fetch blocked (HTTP 403); crawl rules unknown."
+    }
+  ],
+  "reasons": [
+    {"engine": "certificate_chain", "severity": "high", "text": "Site is served over plain http, so there is no certificate at all."},
+    {"engine": "transport", "severity": "high", "text": "No HTTPS support: the server does not answer on port 443 with a certificate."},
+    {"engine": "content_heuristics", "severity": "medium", "text": "Page promises free cryptocurrency in exchange for a wallet connect."},
+    {"engine": "domain_lookalike", "severity": "medium", "text": "Domain 'example-bonus.click' is 4 months old and uses a cheap TLD."},
+    {"engine": "reputation", "severity": "medium", "text": "Not on major blocklists, but 3 users marked it as spam this week."},
+    {"engine": "content_heuristics", "severity": "medium", "text": "Contact form asks for a phone number before showing any content."}
+  ],
+  "certificate_chain": [
+    {"subject": "-", "issuer": "-", "role": "leaf", "status": "unknown"}
+  ]
+}
