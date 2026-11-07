@@ -1,52 +1,100 @@
-// Vertical list of TLS chain nodes: root -> intermediate -> leaf, each with a
-// role badge and a status-colored dot. Takes the raw `certificate_chain`
-// array from the analyze response as props.
-import { certStatusClasses } from "../lib/score.js";
+// Certificate chain, switchable between the 3D view (three.js blocks + links)
+// and the plain vertical list. The 3D module is lazy-loaded so three.js is a
+// separate chunk that only downloads when needed; browsers without WebGL (or
+// with it failing at runtime) fall back to the list automatically.
+import { Suspense, lazy, useMemo, useState } from "react";
+import CertificateChainList from "./CertificateChainList.jsx";
 
-const ROLE_CLASSES = {
-  root: "bg-slate-500/15 text-slate-300 ring-slate-500/30",
-  intermediate: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
-  leaf: "bg-violet-500/15 text-violet-300 ring-violet-500/30",
-};
+const CertificateChain3D = lazy(() => import("./CertificateChain3D.jsx"));
+
+const VIEW_KEY = "hackmatrix_cert_view";
+
+function storageGet(key, fallback) {
+  try {
+    return window.localStorage.getItem(key) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function storageSet(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // private mode etc.: choice just isn't persisted
+  }
+}
+
+function webglAvailable() {
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(
+      window.WebGLRenderingContext &&
+        (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
+    );
+  } catch {
+    return false;
+  }
+}
 
 export default function CertificateChain({ chain }) {
-  if (!Array.isArray(chain) || chain.length === 0) {
-    return (
-      <p className="text-sm text-slate-500">
-        No certificate chain in this response (e.g. plain-HTTP sites have none).
-      </p>
-    );
+  const can3D = useMemo(webglAvailable, []);
+  const [view, setView] = useState(() => {
+    if (!can3D || !Array.isArray(chain) || chain.length === 0) return "list";
+    return storageGet(VIEW_KEY, "3d") === "list" ? "list" : "3d";
+  });
+
+  const hasChain = Array.isArray(chain) && chain.length > 0;
+
+  function choose(next) {
+    setView(next);
+    storageSet(VIEW_KEY, next);
   }
 
   return (
-    <ol className="relative ml-2 flex list-none flex-col gap-3 border-l border-slate-700 pl-4">
-      {chain.map((node, i) => {
-        const status = certStatusClasses(node.status);
-        return (
-          <li key={i} className="relative">
-            {/* status dot on the rail */}
-            <span className={`absolute -left-[22px] top-2 h-3 w-3 rounded-full ring-2 ring-slate-900 ${status.dot}`} />
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
-              <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                <span
-                  className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 ${
-                    ROLE_CLASSES[node.role] || ROLE_CLASSES.root
-                  }`}
-                >
-                  {node.role || "cert"}
-                </span>
-                <span className={`text-xs font-semibold ${status.text}`}>
-                  {node.status}
-                </span>
-              </div>
-              <p className="break-all font-mono text-sm text-slate-200">{node.subject}</p>
-              {node.issuer && node.issuer !== node.subject && (
-                <p className="mt-0.5 break-all font-mono text-xs text-slate-500">issued by {node.issuer}</p>
-              )}
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold text-slate-300">Certificate chain</h3>
+
+        {hasChain && can3D && (
+          <div className="flex overflow-hidden rounded-lg ring-1 ring-slate-700" role="group" aria-label="Certificate chain view">
+            <button
+              type="button"
+              onClick={() => choose("3d")}
+              aria-pressed={view === "3d"}
+              className={`px-3 py-1 text-xs font-semibold transition ${
+                view === "3d" ? "bg-sky-600 text-white" : "bg-slate-900 text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              3D
+            </button>
+            <button
+              type="button"
+              onClick={() => choose("list")}
+              aria-pressed={view === "list"}
+              className={`px-3 py-1 text-xs font-semibold transition ${
+                view === "list" ? "bg-sky-600 text-white" : "bg-slate-900 text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              List
+            </button>
+          </div>
+        )}
+      </div>
+
+      {hasChain && view === "3d" && can3D ? (
+        <Suspense
+          fallback={
+            <div className="flex h-64 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 text-sm text-slate-500 md:h-72">
+              loading 3D chain…
             </div>
-          </li>
-        );
-      })}
-    </ol>
+          }
+        >
+          <CertificateChain3D chain={chain} />
+        </Suspense>
+      ) : (
+        <CertificateChainList chain={chain} />
+      )}
+    </section>
   );
 }

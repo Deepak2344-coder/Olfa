@@ -135,10 +135,7 @@ export default function App() {
             </div>
           </section>
 
-          <section className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-slate-300">Certificate chain</h3>
-            <CertificateChain chain={result.certificate_chain} />
-          </section>
+          <CertificateChain chain={result.certificate_chain} />
 
           <section className="flex flex-col gap-3">
             <h3 className="text-sm font-semibold text-slate-300">

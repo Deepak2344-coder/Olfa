@@ -70,6 +70,19 @@ export function severityClasses(severity) {
 }
 
 /**
+ * Bucket a certificate status for the 3D chain view (and colors everywhere).
+ * @param {string} status ok | unknown | anything else (failed, expired, weak,
+ *   distrusted, revoked, self-signed, ...)
+ * @returns {"ok"|"warn"|"bad"}
+ */
+export function certStatusKind(status) {
+  const s = String(status ?? "").trim().toLowerCase();
+  if (!s || s === "-" || s === "unknown") return "warn";
+  if (s === "ok" || s === "valid" || s === "trusted") return "ok";
+  return "bad";
+}
+
+/**
  * Colors for a certificate status value.
  * @param {string} status ok | unknown | anything else (failed, expired, ...)
  * @returns {{dot: string, text: string}}

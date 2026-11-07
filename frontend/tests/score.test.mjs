@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { clampScore, scoreBand, verdictBand, gaugeAngle, shortAge, severityClasses } from "../src/lib/score.js";
+import { clampScore, scoreBand, verdictBand, gaugeAngle, shortAge, severityClasses, certStatusKind } from "../src/lib/score.js";
 
 test("clampScore clamps and rounds", () => {
   assert.equal(clampScore(-5), 0);
@@ -35,6 +35,19 @@ test("severityClasses maps all severities and unknowns", () => {
   for (const s of ["info", "low", "medium", "high", "nonsense"]) {
     assert.equal(typeof severityClasses(s), "string");
   }
+});
+
+test("certStatusKind buckets statuses for the 3D chain", () => {
+  assert.equal(certStatusKind("ok"), "ok");
+  assert.equal(certStatusKind("valid"), "ok");
+  assert.equal(certStatusKind("trusted"), "ok");
+  assert.equal(certStatusKind("unknown"), "warn");
+  assert.equal(certStatusKind("-"), "warn");
+  assert.equal(certStatusKind(undefined), "warn");
+  assert.equal(certStatusKind("expired"), "bad");
+  assert.equal(certStatusKind("weak"), "bad");
+  assert.equal(certStatusKind("distrusted"), "bad");
+  assert.equal(certStatusKind("self-signed"), "bad");
 });
 
 test("shortAge renders relative labels", () => {
