@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HackMatrix — Options</title>
+  <link rel="stylesheet" href="popup.css" />
+  <style>
+    body { width: min(560px, 92vw); margin: 40px auto; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+    label { display: block; margin: 14px 0 4px; font-weight: 600; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 14px; }
+    #saved { color: #4ade80; font-size: 12px; margin-left: 10px; }
+    input[type="checkbox"] { width: auto; }
+  </style>
+</head>
+<body>
+  <h1 style="font-size:18px">Hack<span class="accent" style="color:#38bdf8">Matrix</span> options</h1>
+
+  <div class="card">
+    <label for="enabled">Extension on/off</label>
+    <input type="checkbox" id="enabled" />
+    <span>Scan pages automatically as they load</span>
+
+    <label for="api-url">API URL</label>
+    <input type="text" id="api-url" placeholder="http://localhost:8000" spellcheck="false" />
+    <div class="hint">POST {API URL}/analyze and {API URL}/report. Only the URL is sent — never page content.
+      Add the whitelist to the backend's CORS origins if it refuses requests (the extension origin looks like chrome-extension://&lt;id&gt;).
+    </div>
+
+    <label for="use-mock">Mock mode</label>
+    <input type="checkbox" id="use-mock" />
+    <span>Fake scans from the /shared/contracts examples (no backend needed)</span>
+
+    <label for="dashboard-url">Dashboard URL</label>
+    <input type="text" id="dashboard-url" placeholder="http://localhost:5173" spellcheck="false" />
+    <div class="hint">Used by the "Dashboard ↗" link in the popup (the React app in /frontend).</div>
+
+    <div class="row">
+      <button id="save">Save</button>
+      <span id="saved" hidden>Saved ✓</span>
+    </div>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

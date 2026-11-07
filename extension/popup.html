@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HackMatrix</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <span class="logo">Hack<span class="accent">Matrix</span></span>
+    <div class="actions">
+      <a id="dashboard-link" href="http://localhost:5173" target="_blank" title="Open full dashboard">Dashboard ↗</a>
+      <a href="options.html" target="_blank" title="Options">Options</a>
+    </div>
+  </header>
+
+  <main id="status"><!-- filled by popup.js --></main>
+
+  <section id="report" hidden>
+    <h3>Report this site</h3>
+    <select id="report-category">
+      <option value="phishing">phishing</option>
+      <option value="scam">scam</option>
+      <option value="impersonation">impersonation</option>
+      <option value="legitimate">legitimate</option>
+    </select>
+    <input id="report-note" type="text" placeholder="What did you see? (optional)" maxlength="500" />
+    <p id="report-feedback"></p>
+    <div class="row">
+      <button id="report-send">Send report</button>
+      <button id="report-cancel" class="quiet">Cancel</button>
+    </div>
+  </section>
+
+  <div class="row footer">
+    <button id="report-open" class="quiet">⚑ Report this site</button>
+    <span id="mode-note"></span>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

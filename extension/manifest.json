@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "HackMatrix",
+  "version": "0.1.0",
+  "description": "Trust-checks the site in your current tab and warns on dangerous pages. Sends only the URL, never page content.",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["http://localhost/*", "http://127.0.0.1/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "HackMatrix trust check"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content/banner.js"],
+      "css": ["content/banner.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
